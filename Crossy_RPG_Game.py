@@ -23,6 +23,11 @@ game_screen = pygame.display.set_mode((SCREEN_HEIGHT, SCREEN_HEIGHT))
 game_screen.fill(WHITE_COLOR)
 pygame.display.set_caption(SCREEN_TITLE)
 
+# Load the player image from the file directory
+player_image = pygame.image.load('player.png')
+# Scale the image up
+player_image = pygame.transform.scale(player_image, (50, 50))
+
 '''
 Set up the game loop and use this loop to render graphics
 '''
@@ -38,9 +43,12 @@ while not is_game_over:
         print(event)
 
     # Draw a rectangle on top of the game screen canvas(x,y,width,height)
-    pygame.draw.rect(game_screen, BLACK_COLOR, [350, 350, 100, 100])
+    # pygame.draw.rect(game_screen, BLACK_COLOR, [350, 350, 100, 100])
     # Draw a circle on top of the game screen(x,y,radius)
-    pygame.draw.circle(game_screen, BLACK_COLOR, (400, 300), 50)
+    # pygame.draw.circle(game_screen, BLACK_COLOR, (400, 300), 50)
+
+    # Draw the player image on top of the screen at (x ,y) position
+    game_screen.blit(player_image, (375, 375))
 
     # Update all game graphics
     pygame.display.update()

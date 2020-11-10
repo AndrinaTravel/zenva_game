@@ -12,6 +12,8 @@ WHITE_COLOR = (255, 255, 255)
 BLACK_COLOR = (0, 0, 0)
 # Clock used to update game events and FPS
 clock = pygame.time.Clock()
+pygame.font.init()
+font = pygame.font.SysFont('comicsans', 75)
 
 
 class Game:
@@ -31,9 +33,13 @@ class Game:
         self.game_screen.fill(WHITE_COLOR)
         pygame.display.set_caption(title)
 
+        background_image = pygame.image.load(image_path)
+        self.image = pygame.transform.scale(background_image, (width, height))
+
     # Main game loop, used to update all gameplay
     def run_game_loop(self):
         is_game_over = False
+        did_win = False
         direction = 0
 
         player_character = PlayerCharacter('player.png', 375, 700, 50, 50)
@@ -63,6 +69,7 @@ class Game:
 
             # Redraw the screen to be a blank white window
             self.game_screen.fill(WHITE_COLOR)
+            self.game_screen.blit(self.image, (0, 0))
 
             # Draw the treasure
             treasure.draw(self.game_screen)
@@ -75,10 +82,24 @@ class Game:
             enemy_0.move(self.width)
             enemy_0.draw(self.game_screen)
 
+            # End game if collision between enemy or treasure
             if player_character.detect_collision(enemy_0):
                 is_game_over = True
+                did_win = False
+                text = font.render('You Lose!', True, BLACK_COLOR)
+                self.game_screen.blit(text, (300, 350))
+                pygame.display.update()
+                clock.tick(1)
+                break
+
             elif player_character.detect_collision(treasure):
                 is_game_over = True
+                did_win = True
+                text = font.render('You Win!', True, BLACK_COLOR)
+                self.game_screen.blit(text, (300, 350))
+                pygame.display.update()
+                clock.tick(1)
+                break
 
 
             # Update all game graphics
@@ -86,6 +107,10 @@ class Game:
             # Tick the clock to update everything within the game
             clock.tick(self.TICK_RATE)
 
+        if did_win:
+            self.run_game_loop()
+        else:
+            return
 
 # Generic Game Object class to be subclassed by other objects in the game
 class GameObject:

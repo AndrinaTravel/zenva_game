@@ -38,6 +38,7 @@ class Game:
 
         player_character = PlayerCharacter('player.png', 375, 700, 50, 50)
         enemy_0 = NonPlayerCharacter('enemy.png', 20, 400, 50, 50)
+        treasure = GameObject('treasure.png', 375, 50, 50, 50)
 
         while not is_game_over:
             # A loop to get all of the events occurring at any given time
@@ -62,15 +63,22 @@ class Game:
 
             # Redraw the screen to be a blank white window
             self.game_screen.fill(WHITE_COLOR)
+
+            # Draw the treasure
+            treasure.draw(self.game_screen)
             # Update the player position
             player_character.move(direction, self.height)
             # Draw the player at the new position
             player_character.draw(self.game_screen)
 
-
+            # Move and draw the enemy character
             enemy_0.move(self.width)
             enemy_0.draw(self.game_screen)
 
+            if player_character.detect_collision(enemy_0):
+                is_game_over = True
+            elif player_character.detect_collision(treasure):
+                is_game_over = True
 
 
             # Update all game graphics
@@ -102,7 +110,7 @@ class GameObject:
 class PlayerCharacter(GameObject):
 
     # How many tiles the character moves per second
-    SPEED = 10
+    SPEED = 5
 
     def __init__(self, image_path, x, y, width, height):
         super().__init__(image_path, x, y, width, height)
@@ -114,15 +122,30 @@ class PlayerCharacter(GameObject):
         elif direction < 0:
             self.y_pos += self.SPEED
         # Make sure the character never goes past the bottom of the screen
-        if self.y_pos >= max_height - self.height:
-            self.y_pos = max_height - self.height
+        if self.y_pos >= max_height - 40:
+            self.y_pos = max_height - 40
+
+    # Return False (no collision) if y positions and x positions do not overlap
+    # Return True x and y positions overlap
+    def detect_collision(self, other_body):
+        if self.y_pos > other_body.y_pos + other_body.height:
+            return False
+        elif self.y_pos + self.height < other_body.y_pos:
+            return False
+
+        if self.x_pos > other_body.x_pos + other_body.width:
+            return False
+        elif self.x_pos + self.width < other_body.x_pos:
+            return False
+
+        return True
 
 
 # Class to represent the enemy character
 class NonPlayerCharacter(GameObject):
 
     # How many tiles the enemy moves per second
-    SPEED = 10
+    SPEED = 5
 
     def __init__(self, image_path, x, y, width, height):
         super().__init__(image_path, x, y, width, height)
@@ -131,7 +154,7 @@ class NonPlayerCharacter(GameObject):
     def move(self, max_width):
         if self.x_pos <= 20:
             self.SPEED = abs(self.SPEED)
-        elif self.x_pos >= max_width - 20:
+        elif self.x_pos >= max_width - 40:
             self.SPEED = -abs(self.SPEED)
         self.x_pos += self.SPEED
 

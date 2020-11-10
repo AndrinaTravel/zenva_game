@@ -37,6 +37,7 @@ class Game:
         direction = 0
 
         player_character = PlayerCharacter('player.png', 375, 700, 50, 50)
+        enemy_0 = NonPlayerCharacter('enemy.png', 20, 400, 50, 50)
 
         while not is_game_over:
             # A loop to get all of the events occurring at any given time
@@ -62,9 +63,14 @@ class Game:
             # Redraw the screen to be a blank white window
             self.game_screen.fill(WHITE_COLOR)
             # Update the player position
-            player_character.move(direction)
+            player_character.move(direction, self.height)
             # Draw the player at the new position
             player_character.draw(self.game_screen)
+
+
+            enemy_0.move(self.width)
+            enemy_0.draw(self.game_screen)
+
 
 
             # Update all game graphics
@@ -102,11 +108,32 @@ class PlayerCharacter(GameObject):
         super().__init__(image_path, x, y, width, height)
 
     # Move function will move the character up if direction > 0 and down if < 0
-    def move(self, direction):
+    def move(self, direction, max_height):
         if direction > 0:
             self.y_pos -= self.SPEED
         elif direction < 0:
             self.y_pos += self.SPEED
+        # Make sure the character never goes past the bottom of the screen
+        if self.y_pos >= max_height - self.height:
+            self.y_pos = max_height - self.height
+
+
+# Class to represent the enemy character
+class NonPlayerCharacter(GameObject):
+
+    # How many tiles the enemy moves per second
+    SPEED = 10
+
+    def __init__(self, image_path, x, y, width, height):
+        super().__init__(image_path, x, y, width, height)
+
+    # Move function will move the enemy
+    def move(self, max_width):
+        if self.x_pos <= 20:
+            self.SPEED = abs(self.SPEED)
+        elif self.x_pos >= max_width - 20:
+            self.SPEED = -abs(self.SPEED)
+        self.x_pos += self.SPEED
 
 
 pygame.init()

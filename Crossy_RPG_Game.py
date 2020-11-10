@@ -37,13 +37,21 @@ class Game:
         self.image = pygame.transform.scale(background_image, (width, height))
 
     # Main game loop, used to update all gameplay
-    def run_game_loop(self):
+    def run_game_loop(self, level_speed):
         is_game_over = False
         did_win = False
         direction = 0
 
         player_character = PlayerCharacter('player.png', 375, 700, 50, 50)
-        enemy_0 = NonPlayerCharacter('enemy.png', 20, 400, 50, 50)
+        enemy_0 = NonPlayerCharacter('enemy.png', 20, 600, 50, 50)
+        enemy_0.SPEED += level_speed
+
+        enemy_1 = NonPlayerCharacter('enemy.png', self.width - 40, 400, 50, 50)
+        enemy_0.SPEED += level_speed
+
+        enemy_2 = NonPlayerCharacter('enemy.png', 20, 200, 50, 50)
+        enemy_0.SPEED += level_speed
+
         treasure = GameObject('treasure.png', 375, 50, 50, 50)
 
         while not is_game_over:
@@ -82,6 +90,13 @@ class Game:
             enemy_0.move(self.width)
             enemy_0.draw(self.game_screen)
 
+            if level_speed > 2:
+                enemy_1.move(self.width)
+                enemy_1.draw(self.game_screen)
+            if level_speed > 4:
+                enemy_2.move(self.width)
+                enemy_2.draw(self.game_screen)
+
             # End game if collision between enemy or treasure
             if player_character.detect_collision(enemy_0):
                 is_game_over = True
@@ -96,7 +111,7 @@ class Game:
                 is_game_over = True
                 did_win = True
                 text = font.render('You Win!', True, BLACK_COLOR)
-                self.game_screen.blit(text, (300, 350))
+                self.game_screen.blit(text, (275, 350))
                 pygame.display.update()
                 clock.tick(1)
                 break
@@ -108,7 +123,7 @@ class Game:
             clock.tick(self.TICK_RATE)
 
         if did_win:
-            self.run_game_loop()
+            self.run_game_loop(level_speed + 0.5)
         else:
             return
 
@@ -187,21 +202,9 @@ class NonPlayerCharacter(GameObject):
 pygame.init()
 
 new_game = Game('background.png', SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT)
-new_game.run_game_loop()
+new_game.run_game_loop(1)
 
 # Quit pygame and the program
 pygame.quit()
 quit()
 
-# Load the player image from the file directory
-# player_image = pygame.image.load('player.png')
-# Scale the image up
-# player_image = pygame.transform.scale(player_image, (50, 50))
-
-# Draw a rectangle on top of the game screen canvas(x,y,width,height)
-            # pygame.draw.rect(game_screen, BLACK_COLOR, [350, 350, 100, 100])
-            # Draw a circle on top of the game screen(x,y,radius)
-            # pygame.draw.circle(game_screen, BLACK_COLOR, (400, 300), 50)
-
-            # Draw the player image on top of the screen at (x ,y) position
-            # game_screen.blit(player_image, (375, 375))

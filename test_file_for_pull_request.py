@@ -1,4 +1,4 @@
 def pullRequest(x):
     print(x + 1)
 
-pullrequest(2)
+pullrequest(5)
